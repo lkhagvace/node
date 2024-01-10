@@ -1,11 +1,24 @@
 const fs = require("node:fs");
-const read = () => {
+var http = require("http");
+const { url } = require("node:inspector");
+const server = http.createServer((req, response) => {
+  const reqUrl = req.url;
+  if (reqUrl == "/") {
+    response.writeHead(200, { "Content-Type": "text/plain" });
+    response.end("Hello Its Ace");
+  }
+  if (reqUrl == "/users") {
+    read(response);
+  }
+});
+const read = (response) => {
   fs.readFile("/Users/ace/desktop/node/input.json", "utf8", (err, json) => {
     if (err) {
-      return console.error(err);
+      return console.error("error:", err);
     }
     const data = JSON.parse(json);
-    // console.log(data);
+    response.writeHead(200, { "Content-type": "application/json" });
+    response.end(JSON.stringify(data));
   });
 };
 const create = (data) => {
@@ -15,7 +28,6 @@ const create = (data) => {
     }
     const prevdata = JSON.parse(json);
     prevdata.push(data);
-    // console.log(prevdata);
   });
 };
 create({
@@ -34,7 +46,7 @@ const update = (id, data) => {
     const prevdata = JSON.parse(json);
     const DataToUpdate = prevdata.filter((el) => el.id === id);
     const newArr = prevdata.filter((el) => el.id !== id);
-    newArr.push({ ...DataToUpdate, ...data });
+    newArr.push({ ...{ DataToUpdate }, ...data });
     console.log(newArr);
     fs.writeFile(
       "/Users/ace/desktop/node/input.json",
@@ -55,7 +67,10 @@ const dlt = (id) => {
     const prevdata = JSON.parse(json);
     const dltId = prevdata[id - 1];
     const newArr = prevdata.filter((data) => data.id !== dltId.id);
-    // console.log(newArr);
   });
 };
-dlt(1);
+dlt();
+const PORT = 8000;
+server.listen(PORT, () => {
+  console.log(`http://localhost:${PORT}`);
+});

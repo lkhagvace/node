@@ -1,8 +1,9 @@
 var http = require("http");
-const db = require("");
-http
-  .createServer(function (req, res) {
-    res.write("hello world lkhagva");
-    res.end();
-  })
-  .listen(8080);
+const server = http.createServer((req, response) => {
+  response.writeHead(200, { "Content-Type": "application/json" });
+  response.end("Hello Its Ace heeh");
+});
+const PORT = 3000;
+server.listen(PORT, () => {
+  console.log(`http://localhost:${PORT}`);
+});
